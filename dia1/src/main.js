@@ -10,7 +10,7 @@ app.innerHTML = `
 const link = document.querySelector('[data-js=link]');
 
 function toggleVisibilityApp() {
-  app.hidden.toggle('hidden');
+  app.classList.toggle('hidden');
   // Another way to hide an element in the DOM would be with the hidden attribute
   // app.hidden = !app.hidden
 }
