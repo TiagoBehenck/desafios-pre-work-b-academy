@@ -1,6 +1,6 @@
 import './style.css'
 
-const app = document.querySelector('.app');
+const app = document.querySelector('[data-js="app"]');
 
 app.innerHTML = `
    <h1>B. Academy</h1>
