@@ -5,6 +5,11 @@ const john = {
   hobbies: ['Surf', 'Design'],
 }
 
+const daciuk = {
+  ...john,
+  hobbies: [...john.hobbies, 'Games']
+}
+
 const jane = john
 
 jane.name = 'Jane'
