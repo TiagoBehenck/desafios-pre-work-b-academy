@@ -1,6 +1,7 @@
-const inputName = document.querySelector('[data-js="name"]');
-const inputCores = document.querySelector('[data-js="cores"]');
-const divCores = document.querySelector('[data-js="mostrarCores"]');
+const inputName = document.querySelector('[data-js="name"]')
+const form = document.querySelector('[data-js="form1"]')
+const colorsContainer = document.createElement('div')
+document.body.appendChild(colorsContainer)
 
 export const textCapitalize = (text) => (text && text.length
   ? text
@@ -20,35 +21,34 @@ inputName.addEventListener('input', (e) => {
   inputName.value = textCapitalize(e.target.value)
 })
 
-const cores = {
-  vermelho: '#f00',
-  azul: '#0000ff',
-  amarelo: '#ffff00',
-  verde: '#008000',
-  preto: '#000',
-}
+function changeColor(color) {
+  colorsContainer.innerHTML = ''
 
-function changeColor(colorParam) {
-  colorParam.map((option) => {
-    const divColorida = document.createElement('div');
-    const nomeCor = document.createElement('p');
-    if (option.selected) {
-      divColorida.style.width = '100px'
-      divColorida.style.height = '100px'
-      divColorida.style.margin = '24px'
-      divColorida.style.backgroundColor = cores[option.value]
-      nomeCor.style.color = '#fff'
-      nomeCor.textContent = option.value
-      divColorida.appendChild(nomeCor)
-      divCores.appendChild(divColorida);
-    }
+  Array.from(color).map(color => {
+    const div = document.createElement('div')
+    div.style.width = '100px'
+    div.style.height = '100px'
+    console.log(color.value)
+    div.style.background = color.value
+
+    colorsContainer.appendChild(div)
   })
 };
 
-inputCores.addEventListener('change', (e) => {
-  const selectedOpts = [...e.target.options].map(x => ({
-    value: x.value,
-    selected: x.selected,
-  }))
-  changeColor(selectedOpts)
+const select = document.createElement('select')
+const colors = ['#fff', '#0000ff', '#ffff00', '#008000', '#000']
+
+colors.forEach(color => {
+  const option = document.createElement('option')
+  option.value = color
+  option.textContent = color
+  select.appendChild(option)
 })
+
+select.addEventListener('click', (e) => {
+  e.preventDefault();
+  changeColor(select.selectedOptions)
+})
+
+select.setAttribute('multiple', '')
+form.appendChild(select)
