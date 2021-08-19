@@ -18,8 +18,32 @@ form > select {
   margin: 24px;
 }
 
+form > button {
+  margin: 24px;
+}
+
 div {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+table {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: auto;
+  margin: 24px;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
 }
