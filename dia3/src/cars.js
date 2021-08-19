@@ -1,7 +1,7 @@
 const formCar = document.querySelector('[data-js="form"]');
 const tableCar = document.querySelector('[data-js="table"]');
 
-const inserirNovaLinhaN = ({
+const insertNewRow = ({
   imageUrl,
   marca,
   ano,
@@ -49,7 +49,7 @@ formCar.addEventListener('submit', (e) => {
     cor,
   }
 
-  inserirNovaLinhaN(car)
+  insertNewRow(car)
 
   formCar.imagem.value = ''
   formCar.marca.value = ''
