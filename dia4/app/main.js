@@ -25,6 +25,7 @@ const insertNewRow = ({
   const yearCell = newRow.insertCell(2)
   const plateCell = newRow.insertCell(3)
   const colorCell = newRow.insertCell(4)
+  const buttonCell = newRow.insertCell(5)
 
   const imgElement = document.createElement('img')
   imgElement.src = image
@@ -40,6 +41,13 @@ const insertNewRow = ({
   pintura.style.height = '25px'
   pintura.style.backgroundColor = color
   colorCell.appendChild(pintura)
+
+  const deleteButton = document.createElement('button')
+  deleteButton.type = 'button'
+  deleteButton.textContent = 'Excluir'
+  deleteButton.addEventListener('click', () => deleteCar(newRow, plate))
+
+  buttonCell.appendChild(deleteButton)
 }
 
 formCar.addEventListener('submit', (e) => {
@@ -108,6 +116,22 @@ const addNewCar = async ({
     plate,
     color,
   })
+}
+
+async function deleteCar(carRow, plate) {
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ plate }),
+  })
+
+  if (!response.ok) {
+    return
+  }
+
+  carRow.remove()
 }
 
 const emptyRows = () => {
