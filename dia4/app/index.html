@@ -11,19 +11,19 @@
 <body>
   <form data-js="form">
     <label for="image">Imagem</label>
-    <input type="text" name="image" id="image">
+    <input type="text" name="image" id="image" placeholder="URL da imagem">
 
     <label for="brandModel">Marca/Modelo</label>
-    <input type="text" name="brandModel" id="brandModel">
+    <input type="text" name="brandModel" id="brandModel" placeholder="Marca e modelo do carro" required>
 
     <label for="plate">Placa</label>
-    <input type="text" name="plate" id="plate">
+    <input type="text" name="plate" id="plate" placeholder="ABC-1234" pattern="[A-Z]{3}-[0-9]{4}" required>
 
     <label for="year">Ano</label>
-    <input type="text" name="year" id="year">
+    <input name="year" id="year" placeholder="Ano de fabricação do carro" required>
 
     <label for="color">Cor</label>
-    <input type="color" id="color" name="color" value="#ffffff">
+    <input type="color" id="color" name="color" value="#ffffff" required>
 
     <button>Enviar</button>
   </form>

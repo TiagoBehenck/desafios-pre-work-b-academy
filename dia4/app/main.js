@@ -12,6 +12,12 @@ const insertNewRow = ({
   plate,
   color,
 }) => {
+  const noContent = document.querySelector('[data-js="no-content"]');
+
+  if (noContent) {
+    tableCar.removeChild(noContent)
+  }
+
   const newRow = tableCar.insertRow(-1)
 
   const imageCell = newRow.insertCell(0)
@@ -53,49 +59,85 @@ formCar.addEventListener('submit', (e) => {
     color,
   }
 
-  console.log({ car })
 
-  insertNewRow(car)
+  addNewCar(car)
 
-  formCar.image.value = ''
-  formCar.brandModel.value = ''
-  formCar.year.value = ''
-  formCar.plate.value = ''
-  formCar.color.value = '#ffffff'
+  e.target.reset()
 
   formCar.image.focus()
 })
 
+const showError = (errorMessage) => {
+  const p = document.createElement('p')
+  p.textContent = `${errorMessage}`
+  formCar.appendChild(p)
+}
+
+const addNewCar = async ({
+  image,
+  brandModel,
+  year,
+  plate,
+  color,
+}) => {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      image,
+      brandModel,
+      year,
+      plate,
+      color,
+    }),
+  })
+    .then(r => r.json())
+    .catch(e => ({ error: true, message: e.message }))
+
+  if (response.error) {
+    showError(response.message)
+    return
+  }
+
+  insertNewRow({
+    image,
+    brandModel,
+    year,
+    plate,
+    color,
+  })
+}
+
 const emptyRows = () => {
-  const tbody = document.createElement('tbody')
   const tr = document.createElement('tr')
   const td = document.createElement('td')
-
+  tr.dataset.js = 'no-content'
   td.innerText = 'Nenhum carro encontrado'
-  td.colSpan = '5'
+  td.colSpan = '6'
 
   tr.appendChild(td)
-  tbody.appendChild(td)
-  tableCar.appendChild(tbody)
+  tableCar.appendChild(tr)
 }
 
 const fechDataCars = async () => {
   const response = await fetch(url)
+    .then(r => r.json())
+    .catch(e => ({ error: true, message: e.message }))
 
-  console.log(response)
-
-  if (!response.status === 200) {
+  if (response.error) {
+    console.log('Erro ao buscar carros', e)
     return
   }
 
-  const carsData = await response.json()
 
-  if (!carsData.length) {
-    emptyRows()
-  } else {
-    carsData.forEach(item => insertNewRow(item))
+  if (response.length === 0) {
+    emptyRows();
+    return
   }
 
+  response.forEach(insertNewRow)
 }
 
 fechDataCars()
