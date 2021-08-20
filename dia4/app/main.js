@@ -66,6 +66,19 @@ formCar.addEventListener('submit', (e) => {
   formCar.image.focus()
 })
 
+const emptyRows = () => {
+  const tbody = document.createElement('tbody')
+  const tr = document.createElement('tr')
+  const td = document.createElement('td')
+
+  td.innerText = 'Nenhum carro encontrado'
+  td.colSpan = '5'
+
+  tr.appendChild(td)
+  tbody.appendChild(td)
+  tableCar.appendChild(tbody)
+}
+
 const fechDataCars = async () => {
   const response = await fetch(url)
 
@@ -77,7 +90,12 @@ const fechDataCars = async () => {
 
   const carsData = await response.json()
 
-  carsData.forEach(item => insertNewRow(item))
+  if (!carsData.length) {
+    emptyRows()
+  } else {
+    carsData.forEach(item => insertNewRow(item))
+  }
+
 }
 
 fechDataCars()

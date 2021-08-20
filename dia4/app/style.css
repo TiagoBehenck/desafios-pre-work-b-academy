@@ -25,9 +25,7 @@ div {
 }
 
 table {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: auto;
