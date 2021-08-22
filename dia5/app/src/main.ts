@@ -2,11 +2,16 @@ import './style.css'
 import { get, post, del } from './http'
 
 const url = 'http://localhost:3333/cars'
-const form = document.querySelector('[data-js="cars-form"]')
-const table = document.querySelector('[data-js="table"]')
+const form = document.querySelector<HTMLFormElement>('[data-js="cars-form"]')!
+const table = document.querySelector<HTMLTableElement>('[data-js="table"]')!
 
-const getFormElement = (event) => (elementName) => {
-  return event.target.elements[elementName]
+
+type GetFormElement = (target: HTMLFormElement) =>
+  (elementName: string) =>
+    HTMLInputElement
+
+const getFormElement: GetFormElement = (target) => (elementName) => {
+  return target[elementName]
 }
 
 const elementTypes = {
@@ -15,23 +20,28 @@ const elementTypes = {
   color: createColor,
 }
 
-function createImage (data) {
+type CreateImage = {
+  src: string
+  alt: string
+}
+
+function createImage({ src, alt }: CreateImage) {
   const td = document.createElement('td')
   const img = document.createElement('img')
-  img.src = data.src
-  img.alt = data.alt
+  img.src = src
+  img.alt = alt
   img.width = 100
   td.appendChild(img)
   return td
 }
 
-function createText (value) {
+function createText(value: string) {
   const td = document.createElement('td')
   td.textContent = value
   return td
 }
 
-function createColor (value) {
+function createColor(value: string) {
   const td = document.createElement('td')
   const div = document.createElement('div')
   div.style.width = '100px'
@@ -41,19 +51,35 @@ function createColor (value) {
   return td
 }
 
+type Car = {
+  image: string
+  brandModel: string
+  year: string
+  plate: string
+  color: string
+}
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault()
-  const getElement = getFormElement(e)
 
-  const data = {
-    image: getElement('image').value,
+  const target = e.target as HTMLFormElement
+
+  if (!target) {
+    return
+  }
+
+  const getElement = getFormElement(target)
+  const image = getElement('image')
+
+  const data: Car = {
+    image: image.value,
     brandModel: getElement('brand-model').value,
     year: getElement('year').value,
     plate: getElement('plate').value,
     color: getElement('color').value,
   }
 
-  const result = await post(url, data)
+  const result = await post<Car>(url, data)
 
   if (result.error) {
     console.log('deu erro na hora de cadastrar', result.message)
@@ -67,30 +93,51 @@ form.addEventListener('submit', async (e) => {
 
   createTableRow(data)
 
-  e.target.reset()
+  target.reset()
   image.focus()
 })
 
-function createTableRow (data) {
+function createTableRow({
+  image,
+  brandModel,
+  year,
+  plate,
+  color,
+}: Car) {
   const elements = [
-    { type: 'image', value: { src: data.image, alt: data.brandModel } },
-    { type: 'text', value: data.brandModel },
-    { type: 'text', value: data.year },
-    { type: 'text', value: data.plate },
-    { type: 'color', value: data.color }
-  ]
+    { type: 'image', value: { src: image, alt: brandModel } },
+    { type: 'text', value: brandModel },
+    { type: 'text', value: year },
+    { type: 'text', value: plate },
+    { type: 'color', value: color }
+  ] as const
 
   const tr = document.createElement('tr')
-  tr.dataset.plate = data.plate
+  tr.dataset.plate = plate
 
   elements.forEach(element => {
-    const td = elementTypes[element.type](element.value)
-    tr.appendChild(td)
+    let td
+
+    if (element.type === 'image') {
+      td = elementTypes.image(element.value)
+    }
+
+    if (element.type === 'text') {
+      td = elementTypes.text(element.value)
+    }
+
+    if (element.type === 'color') {
+      td = elementTypes.color(element.value)
+    }
+
+    if (td) {
+      tr.appendChild(td)
+    }
   })
 
   const button = document.createElement('button')
   button.textContent = 'Excluir'
-  button.dataset.plate = data.plate
+  button.dataset.plate = plate
 
   button.addEventListener('click', handleDelete)
 
@@ -99,8 +146,14 @@ function createTableRow (data) {
   table.appendChild(tr)
 }
 
-async function handleDelete (e) {
-  const button = e.target
+async function handleDelete(e: MouseEvent) {
+  const target = e.target as HTMLFormElement
+
+  if (!target) {
+    return
+  }
+
+  const button = target
   const plate = button.dataset.plate
 
   const result = await del(url, { plate })
@@ -111,7 +164,7 @@ async function handleDelete (e) {
   }
 
   const tr = document.querySelector(`tr[data-plate="${plate}"]`)
-  table.removeChild(tr)
+  table.removeChild(tr!)
   button.removeEventListener('click', handleDelete)
 
   const allTrs = table.querySelector('tr')
@@ -120,11 +173,11 @@ async function handleDelete (e) {
   }
 }
 
-function createNoCarRow () {
+function createNoCarRow() {
   const tr = document.createElement('tr')
   const td = document.createElement('td')
   const thsLength = document.querySelectorAll('table th').length
-  td.setAttribute('colspan', thsLength)
+  td.setAttribute('colspan', String(thsLength))
   td.textContent = 'Nenhum carro encontrado'
 
   tr.dataset.js = 'no-content'
@@ -132,7 +185,7 @@ function createNoCarRow () {
   table.appendChild(tr)
 }
 
-async function main () {
+async function main() {
   const result = await get(url)
 
   if (result.error) {
